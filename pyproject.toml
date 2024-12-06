@@ -1,0 +1,23 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "vivamir"
+version = "1.0.0"
+description = 'AMD Vivado mirroring utility'
+readme = "README.md"
+requires-python = ">=3.12"
+license = { file = "LICENSE" }
+keywords = []
+classifiers = [
+    "Programming Language :: Python",
+    "Programming Language :: Python :: 3.12",
+]
+dependencies = [
+    "rich",
+    "typer"
+]
+
+[project.scripts]
+vivamir = "vivamir.main:main"

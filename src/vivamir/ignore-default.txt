@@ -1,0 +1,11 @@
+# Vivamir
+vivado/
+
+# Vivado
+vivado*.jou
+vivado*.log
+vivado*.str
+**/.Xil
+
+# macOS
+**/.DS_Store
