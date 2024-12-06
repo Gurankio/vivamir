@@ -72,3 +72,12 @@ vivado -mode batch -source project.tcl
 
 vivamir export 'vivado -mode batch'
 ```
+
+#### Install
+
+```sh
+pipx install 
+```
+
+> **Notice!**  
+> Use [PipX](https://pipx.pypa.io/stable/) for simpler updates and management.   
