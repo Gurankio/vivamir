@@ -37,18 +37,16 @@ class FilesetKind(Enum):
 
     @property
     def vivado_name(self) -> str:
-        match self:
-            case FilesetKind.DES:
-                return 'sources_1'
-            case FilesetKind.SIM:
-                return 'sim_1'
+        return {
+            FilesetKind.DES: 'sources_1',
+            FilesetKind.SIM: 'sim_1',
+        }[self]
 
     def __str__(self):
-        match self:
-            case FilesetKind.DES:
-                return 'Design'
-            case FilesetKind.SIM:
-                return 'Simulation'
+        return {
+            FilesetKind.DES: 'Design',
+            FilesetKind.SIM: 'Simulation',
+        }[self]
 
 
 @dataclasses.dataclass()
