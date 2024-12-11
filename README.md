@@ -77,5 +77,5 @@ vivamir export 'vivado -mode batch'
 
 Use [PipX](https://pipx.pypa.io/stable/) for simpler updates and management.
 ```sh
-pipx install git+ssh://git@github.com/Gurankio/vivamir
+pipx install git+https://git@github.com/Gurankio/vivamir
 ```
