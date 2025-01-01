@@ -1,0 +1,45 @@
+version        = {{ major = {major}, minor = {minor}, patch = {patch} }}
+name           = '{name}'
+design_top     = ''
+simulation_top = ''
+ignore         = {{ include = 'vivamir.ignore' }}
+
+# Sources
+includes = ['include']
+filesets = [
+    {{ kind = 'design', path = 'src' }},
+    {{ kind = 'simulation', path = 'test' }},
+]
+
+[block_designs]
+# Blocks designs need to be registered manually as they can ran arbitrary code.
+# Add only trusted designs!
+trusted = []
+
+# Where the sync utility should put new designs.
+new_design_path = 'block_designs'
+
+[ips]
+# Where Vivado should look for your IPs.
+#   Added only if it exists otherwise is silently ignored.
+user_ip_repo_path = 'ips'
+
+[remotes]
+# An example SSH remote host.
+# [[ssh]]
+# host = 'host'
+# vivado = '/path/to/vivado'
+
+[vivado]
+version    = '{version}'
+part       = '{part}'
+board      = '{board}'
+board_long = '{board_long}'
+
+# A list of `set_property name value object` commands.
+#   Should be copied from Vivado Tcl Console.
+#
+# Note: All fields are Tcl snippets that will be executed.
+properties = [
+    {{ name = 'xsim.simulate.log_all_signals', value = 'true', object = '[get_filesets sim_1]' }},
+]

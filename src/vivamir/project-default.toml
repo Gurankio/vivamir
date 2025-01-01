@@ -1,7 +1,0 @@
-[project]
-name = '{}'
-main = '{}'
-ignore = []
-
-[vivado]
-path = '{}'
