@@ -70,19 +70,19 @@ def _generate_project(vivamir: Vivamir) -> str:
 
         ## Project Configuration
         set block_designs [list \\
-            {'\n                '.join(f'"$::root/{bd}" \\' for bd in sorted(vivamir.block_designs.trusted))}
+            {'\n            '.join(f'"$::root/{bd}" \\' for bd in vivamir.block_designs.trusted)}
         ]
         set includes [list \\
-            {'\n                '.join(f'"{file}" \\' for file in sorted(vivamir.includes))}
+            {'\n            '.join(f'"{file}" \\' for file in sorted(vivamir.includes))}
         ]
         set des_filesets [list \\
-            {'\n                '.join(f'"$::root/{file}" \\' for file in sorted(filesets[FilesetKind.DES]))}
+            {'\n            '.join(f'"$::root/{file}" \\' for file in sorted(filesets[FilesetKind.DES]))}
         ]
         set sim_filesets [list \\
-            {'\n                '.join(f'"$::root/{file}" \\' for file in sorted(filesets[FilesetKind.SIM]))}
+            {'\n            '.join(f'"$::root/{file}" \\' for file in sorted(filesets[FilesetKind.SIM]))}
         ]
         set ignores [list \\
-            {'\n                '.join(f'{file} \\' for file in sorted(vivamir.ignore.list))}
+            {'\n            '.join(f'{file} \\' for file in sorted(vivamir.ignore.list))}
         ]
         
         ## Expand
@@ -266,21 +266,21 @@ def _generate_open(_vivamir: Vivamir) -> str:
         # Do not edit manually.
         #
         # Starts the GUI after setting up a fresh project.
-        # Version 1.0.1
+        # Version 1.1.0
         
         ### Create the project.
         source project.tcl
         
         ### Start GUI
-        ## Export at exit
-        atexit {{
-            puts stdout {{Confirm export? [y/N]}}
-            puts stdout {{This will overwrite files!}}
-            flush stdout
-            if {{[string first y [gets stdin]] == 0}} {{
-                source export.tcl
-            }}
-        }}
+        ## Export at exit (disabled due to issues with stdin on `vivamir open`)
+        # atexit {{
+        #     puts stdout {{Confirm export? [y/N]}}
+        #     puts stdout {{This will overwrite files!}}
+        #     flush stdout
+        #     if {{[string first y [gets stdin]] == 0}} {{
+        #         source export.tcl
+        #     }}
+        # }}
         
         ## Continue logging to terminal
         # set pid [exec tail -n0 -f $::root/vivamir/vivado.log &]

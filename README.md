@@ -144,8 +144,12 @@ Mainly Modules have considerable restrictions:
 - there is no way to declare a configurable array of AXI ports (but you can for am hard-coded amount);
 - there is no way to have AXI parameters propagate like Xilinx's own IPs do.
 
-Notably these restriction are not readily available to packaged IPs and require custom Tcl scripts to work.
-(_TODO: See some side project of mine that makes wrapping stuff easy._)
+Notably ~~these restriction are not readily available~~ only the last restriction requires custom Tcl scripts to work.
+(
+   _TODO: See some side project of mine that makes wrapping stuff easy._
+   I managed to get a configurable array of AXI monitor ports easily and might also work without duplicating files.
+   Still likely needs some script to help with re-packaging at every change...
+)
 
 Should you package something you will have to duplicate all required files!
 Example:

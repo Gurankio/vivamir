@@ -1,4 +1,5 @@
 import dataclasses
+import functools
 import tomllib
 from decimal import Decimal
 from enum import Enum
@@ -9,8 +10,25 @@ import dacite
 from vivamir.utility.version import SemanticVersion
 
 
+@functools.total_ordering
 class ProjectPath(Path):
     """ New type wrapper to handle files relative to the project root. """
+
+    def sort_key(self) -> tuple:
+        return (
+            tuple(map(lambda p: p.name, reversed(self.parents)))[1:],
+            len(self.parents),
+            len(self.suffixes),
+            self.name.count('*'),
+            self.name
+        )
+
+    def __lt__(self, other):
+        """ Sorts paths in a visually pleasing manner. """
+        if not isinstance(other, ProjectPath):
+            return super().__lt__(other)
+
+        return self.sort_key() < other.sort_key()
 
 
 class FilesetKind(Enum):
@@ -46,7 +64,7 @@ class Ignore:
 @dataclasses.dataclass(slots=True)
 class BlockDesigns:
     new_design_path: ProjectPath
-    trusted: set[ProjectPath]
+    trusted: list[ProjectPath]
 
 
 @dataclasses.dataclass(slots=True)
