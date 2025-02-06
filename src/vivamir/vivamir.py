@@ -30,6 +30,12 @@ class ProjectPath(Path):
 
         return self.sort_key() < other.sort_key()
 
+    def exists(self, *, follow_symlinks=True):
+        raise ValueError('Cannot call exists on ProjectPath instance, use exists_in_project(root) instead.')
+
+    def exists_in_project(self, vivamir: 'Vivamir', *, follow_symlinks=True):
+        return (vivamir.root / self).exists()
+
 
 class FilesetKind(Enum):
     DES = 'design'
