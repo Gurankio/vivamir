@@ -1,5 +1,6 @@
 import dataclasses
 import functools
+import subprocess
 import tomllib
 from decimal import Decimal
 from enum import Enum
@@ -37,6 +38,26 @@ class ProjectPath(Path):
         return (vivamir.root / self).exists()
 
 
+@dataclasses.dataclass(slots=True)
+class Include:
+    path: ProjectPath = dataclasses.field(default=None)
+    exec: str = dataclasses.field(default=None)
+
+    def resolve(self, root: Path):
+        if self.path is None:
+            if self.exec is None:
+                raise ValueError("Either path or exec must be specified.")
+
+            output = Path(
+                subprocess.run(
+                    self.exec,
+                    check=True, capture_output=True, text=True,
+                    cwd=root, shell=True,
+                ).stdout.strip()
+            )
+            self.path = ProjectPath(output.resolve(strict=True).relative_to(root))
+
+
 class FilesetKind(Enum):
     DES = 'design'
     SIM = 'simulation'
@@ -58,7 +79,23 @@ class FilesetKind(Enum):
 @dataclasses.dataclass(slots=True)
 class Fileset:
     kind: FilesetKind
-    path: ProjectPath
+    path: ProjectPath = dataclasses.field(default=None)
+    exec: str = dataclasses.field(default=None)
+    read_only: bool = dataclasses.field(default=False)
+
+    def resolve(self, root: Path):
+        if self.path is None:
+            if self.exec is None:
+                raise ValueError("Either path or exec must be specified.")
+
+            output = Path(
+                subprocess.run(
+                    self.exec,
+                    check=True, capture_output=True, text=True,
+                    cwd=root, shell=True,
+                ).stdout.strip()
+            )
+            self.path = ProjectPath(output.resolve(strict=True).relative_to(root))
 
 
 @dataclasses.dataclass(slots=True)
@@ -116,7 +153,7 @@ class Vivamir:
     design_top: str
     simulation_top: str
     filesets: list[Fileset]
-    includes: list[ProjectPath]
+    includes: list[Include]
     block_designs: BlockDesigns
     ips: IPs
     remotes: Remote
@@ -132,8 +169,13 @@ class Vivamir:
 
         self = dacite.from_dict(
             cls, tomllib.loads((root / 'vivamir.toml').read_text(), parse_float=Decimal),
-            dacite.Config(strict=True, cast=[float, set, Enum, Path],
-                          type_hooks={ProjectPath: _resolve_relative}),
+            dacite.Config(
+                strict=True, cast=[
+                    float, set, Enum, Path,
+                    # Allow simple string to be parsed as project paths.
+                    # Include
+                ],
+                type_hooks={ProjectPath: _resolve_relative}),
         )
 
         if not SemanticVersion.project().compatible(self.version):
@@ -149,8 +191,14 @@ class Vivamir:
             self.ignore.list = set(_resolve_relative(Path(line)) for line in include.read_text().splitlines()
                                    if len(line) > 0 and not line.startswith('#'))
 
+        for fileset in self.filesets:
+            fileset.resolve(root)
+
         if self.includes is None:
             self.includes = []
+
+        for include in self.includes:
+            include.resolve(root)
 
         for bd in self.block_designs.trusted:
             if bd.suffix != '.tcl':

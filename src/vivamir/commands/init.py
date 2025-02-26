@@ -65,11 +65,11 @@ def command_init():
               .format(name=name, version=version, part=part, board=board, board_long=board_long,
                       major=current_version.major, minor=current_version.minor, patch=current_version.patch))
     (project / 'vivamir.toml').write_text(config)
-    vivamir = Vivamir.load(project)
 
     # Copy defaults ignoring "Python Literals".
-    shutil.copytree(DEFAULT, vivamir.root, ignore=shutil.ignore_patterns('*.pyl'), dirs_exist_ok=True)
+    shutil.copytree(DEFAULT, project, ignore=shutil.ignore_patterns('*.pyl'), dirs_exist_ok=True)
 
+    vivamir = Vivamir.load(project)
     for fileset in vivamir.filesets:
         fileset.path.mkdir(parents=True, exist_ok=True)
 

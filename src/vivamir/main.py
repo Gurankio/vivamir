@@ -29,6 +29,17 @@ def command_root():
     print(vivamir.root)
 
 
+def command_debug():
+    """ Prints the current project's parsed vivado structure. """
+
+    vivamir = Vivamir.search()
+    if vivamir is None:
+        print('[bold red]No vivamir configuration found in the current working directory.')
+        return 1
+
+    print(vivamir)
+
+
 main = typer.Typer()
 main.command(name='version')(commands_version)
 main.command(name='root')(command_root)
@@ -38,6 +49,22 @@ main.command(name='generate')(command_generate)
 main.command(name='open')(command_open)
 main.command(name='export')(command_export)
 main.command(name='remote')(command_remote)
+main.command(name='debug', hidden=True)(command_debug)
+
+
+def version_callback(value: bool):
+    if value:
+        print(str(SemanticVersion.project()))
+        raise typer.Exit()
+
+
+@main.callback()
+def common(
+        _ctx: typer.Context,
+        _version: bool = typer.Option(None, "--version", callback=version_callback),
+):
+    pass
+
 
 if __name__ == '__main__':
     main()
