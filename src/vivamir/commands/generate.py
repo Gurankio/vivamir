@@ -186,10 +186,11 @@ def _generate_project(vivamir: Vivamir) -> str:
 
     setup_waveform = ''
     if waveform := next(
-            waveform.relative_to(vivamir.root)
+            waveform
             for waveform in vivamir.first_fileset(FilesetKind.SIM).path.rglob('*.wcfg')
             if waveform.stem == vivamir.simulation_top
     ):
+        # TODO: this does not update `current_wave_config`
         setup_waveform = f'set_property -name xsim.view -value "$::root/{waveform!s}" -object [get_filesets sim_1]'
 
     return f"""
