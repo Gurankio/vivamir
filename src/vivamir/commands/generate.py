@@ -103,7 +103,7 @@ def _generate_commons(vivamir: Vivamir) -> str:
             {'\n            '.join(f'"$::root/{bd}" \\' for bd in vivamir.block_designs.trusted)}
         ]
         set includes [list \\
-            {'\n            '.join(f'"{file}" \\' for file in sorted(map(lambda i: i.path, vivamir.includes)))}
+            {'\n            '.join(f'"$::root/{file}" \\' for file in sorted(map(lambda i: i.path, vivamir.includes)))}
         ]
         set des_filesets [list \\
             {'\n            '.join(f'"$::root/{file}" \\' for file, _ in sorted(filesets[FilesetKind.DES]))}
@@ -232,27 +232,33 @@ def _generate_project(vivamir: Vivamir) -> str:
             }}
         }}
         
+        set inc_files {{}}
+        foreach file [rglob $includes {{*.*}}] {{
+            if {{[dict exists $valid_extensions [file extension $file]] && ![dict exists $ignore_files_dict $file]}} {{
+                lappend inc_files $file
+            }}
+        }}
+        
         ### Force create project
         create_project $project_name $::root/vivamir/project -part {vivamir.vivado.part} -force
 
         ### Design files
         add_files -fileset sources_1 -norecurse $des_files
-        set includes_absolute {{}}
-        foreach include $includes {{
-            lappend includes_absolute $::root/$include
-        }}
-        add_files -fileset sources_1 $includes_absolute
+        add_files -fileset sources_1 -norecurse $inc_files
         import_files -relative_to $root -fileset sources_1
         
         ### Includes
         set includes_imported {{}}
         foreach include $includes {{
+            set include [string replace $include 0 [string len $::root]]
             lappend includes_imported $::root/vivamir/project/$project_name.srcs/sources_1/imports/$root_name/$include
         }}
         set_property include_dirs $includes_imported [get_filesets sources_1]
         # TODO: Includes work only as globals?
         foreach include $includes_imported {{
-            set_property is_global_include true [get_files $include/*]
+            catch {{
+                set_property is_global_include true[get_files -quiet $include / *]
+            }}
         }}
         
         ### Simulation files
@@ -267,11 +273,6 @@ def _generate_project(vivamir: Vivamir) -> str:
         foreach bd $block_designs {{
             # Source Tcl
             source -notrace $bd
-
-            # Validate BD
-            regenerate_bd_layout
-            validate_bd_design 
-            save_bd_design
 
             # Generate wrapper
             make_wrapper -fileset sources_1 -top [get_files ${{design_name}}.bd] 
