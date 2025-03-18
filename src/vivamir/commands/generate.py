@@ -250,14 +250,14 @@ def _generate_project(vivamir: Vivamir) -> str:
         ### Includes
         set includes_imported {{}}
         foreach include $includes {{
-            set include [string replace $include 0 [string len $::root]]
-            lappend includes_imported $::root/vivamir/project/$project_name.srcs/sources_1/imports/$root_name/$include
+            set include_rel [string replace $include 0 [string len $::root]]
+            lappend includes_imported $::root/vivamir/project/$project_name.srcs/sources_1/imports/$root_name/$include_rel
         }}
         set_property include_dirs $includes_imported [get_filesets sources_1]
         # TODO: Includes work only as globals?
         foreach include $includes_imported {{
             catch {{
-                set_property is_global_include true[get_files -quiet $include/*]
+                set_property is_global_include true [get_files -quiet $include/*]
             }}
         }}
         
