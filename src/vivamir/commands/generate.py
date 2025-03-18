@@ -257,7 +257,7 @@ def _generate_project(vivamir: Vivamir) -> str:
         # TODO: Includes work only as globals?
         foreach include $includes_imported {{
             catch {{
-                set_property is_global_include true[get_files -quiet $include / *]
+                set_property is_global_include true[get_files -quiet $include/*]
             }}
         }}
         
