@@ -5,7 +5,9 @@ simulation_top = ''
 ignore         = {{ include = 'vivamir.ignore' }}
 
 # Sources
-includes = ['include']
+includes = [
+    {{ path = 'include' }},
+]
 filesets = [
     {{ kind = 'design', path = 'src' }},
     {{ kind = 'simulation', path = 'test' }},

@@ -2,11 +2,12 @@ import subprocess
 
 import typer
 from rich import print
+from typing import List
 
 from vivamir.vivamir import Vivamir
 
 
-def command_export(vivado_executable: list[str], yes: bool = False):
+def command_export(vivado_executable: List[str], yes: bool = False):
     """ Runs Vivado to export BDs and sources. """
 
     vivamir = Vivamir.search()

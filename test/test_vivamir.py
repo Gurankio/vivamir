@@ -1,6 +1,6 @@
 import unittest
 from vivamir.utility.paths import DEFAULT
-import tomllib
+import toml
 from tempfile import mkdtemp
 from pathlib import Path
 
@@ -17,7 +17,7 @@ class TestParsing(unittest.TestCase):
 
     def test_valid_toml(self):
         default = (DEFAULT / 'vivamir.pyl').read_text().format_map(self.AnyKey())
-        tomllib.loads(default)
+        toml.loads(default)
 
     def test_parse(self):
         tmp = Path(mkdtemp()).resolve()

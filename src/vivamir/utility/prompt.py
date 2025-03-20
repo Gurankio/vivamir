@@ -1,10 +1,10 @@
-from typing import Optional, Callable
-from rich import print
+from typing import Callable
 
 import typer
+from rich import print
 
 
-def prompt_until_valid[T](prompt: str, validate: Callable[[str], Optional[T]], default: str = None) -> T:
+def prompt_until_valid(prompt: str, validate: Callable, default: str = None):
     try:
         while True:
             value = typer.prompt(prompt, default)

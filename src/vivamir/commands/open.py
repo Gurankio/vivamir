@@ -4,7 +4,7 @@ import functools
 import pty
 import re
 import subprocess
-from typing import Optional
+from typing import Optional, List
 
 from rich import print
 from rich.console import Console
@@ -24,7 +24,7 @@ class TaskReport:
     free_virtual: str
 
     @staticmethod
-    @functools.cache
+    @functools.lru_cache()
     def pattern():
         return re.compile(
             r'^(.+): Time \(s\): cpu = (.+?); elapsed = (.+?) \. Memory \(MB\): peak = (.+?) ; gain = (.+?) ; free physical = (.+?) ; free virtual = (.+?)$'
@@ -40,7 +40,7 @@ class TaskReport:
 
 
 @contextlib.contextmanager
-def clean_vivado(vivamir: Vivamir, vivado_executable: list[str]):
+def clean_vivado(vivamir: Vivamir, vivado_executable: List[str]):
     process = None
     try:
         _, fake_stdin = pty.openpty()
@@ -74,7 +74,7 @@ def clean_vivado(vivamir: Vivamir, vivado_executable: list[str]):
                 print('INFO: [Vivamir] Vivado terminated.')
 
 
-def command_open(vivado_executable: list[str]):
+def command_open(vivado_executable: List[str]):
     """ Runs Vivado and opens the GUI with a fresh project. """
 
     vivamir = Vivamir.search()
@@ -101,7 +101,7 @@ def command_open(vivado_executable: list[str]):
                 if line.startswith('##'):
                     continue
 
-                line = line.removeprefix('# ')
+                line = line.replace('# ', '', 1)
                 buffer += line
 
                 if line.startswith('INFO: '):

@@ -1,19 +1,39 @@
 import dataclasses
 import functools
 import subprocess
-import tomllib
-from decimal import Decimal
 from enum import Enum
 from pathlib import Path
-from typing import Optional
+from typing import Optional, List, Set
 
 import dacite
+import toml
+
 from vivamir.utility.version import SemanticVersion
 
 
 @functools.total_ordering
-class ProjectPath(Path):
+@dataclasses.dataclass()
+class ProjectPath:
     """ New type wrapper to handle files relative to the project root. """
+    path: Path
+
+    def __getattr__(self, item):
+        return getattr(self.path, item)
+
+    def __truediv__(self, key):
+        return ProjectPath(self.path.__truediv__(key))
+
+    def __rtruediv__(self, key):
+        return ProjectPath(self.path.__rtruediv__(key))
+
+    def __hash__(self):
+        return hash(str(self.path.resolve()))
+
+    def __repr__(self):
+        return repr(self.path)
+
+    def __str__(self):
+        return str(self.path)
 
     def sort_key(self) -> tuple:
         return (
@@ -35,10 +55,10 @@ class ProjectPath(Path):
         raise ValueError('Cannot call exists on ProjectPath instance, use exists_in_project(root) instead.')
 
     def exists_in_project(self, vivamir: 'Vivamir', *, follow_symlinks=True):
-        return (vivamir.root / self).exists()
+        return (vivamir.root / self.path).exists()
 
 
-@dataclasses.dataclass(slots=True)
+@dataclasses.dataclass()
 class Include:
     path: ProjectPath = dataclasses.field(default=None)
     exec: str = dataclasses.field(default=None)
@@ -76,7 +96,7 @@ class FilesetKind(Enum):
         }[self]
 
 
-@dataclasses.dataclass(slots=True)
+@dataclasses.dataclass()
 class Fileset:
     kind: FilesetKind
     path: ProjectPath = dataclasses.field(default=None)
@@ -98,19 +118,19 @@ class Fileset:
             self.path = ProjectPath(output.resolve(strict=True).relative_to(root))
 
 
-@dataclasses.dataclass(slots=True)
+@dataclasses.dataclass()
 class Ignore:
     include: Optional[ProjectPath]
-    list: Optional[set[ProjectPath]]
+    list: Optional[Set[ProjectPath]]
 
 
-@dataclasses.dataclass(slots=True)
+@dataclasses.dataclass()
 class BlockDesigns:
     new_design_path: ProjectPath
-    trusted: list[ProjectPath]
+    trusted: List[ProjectPath]
 
 
-@dataclasses.dataclass(slots=True)
+@dataclasses.dataclass()
 class IPs:
     user_ip_repo_path: ProjectPath
 
@@ -120,12 +140,12 @@ class SshRemote:
     vivado: Path
 
 
-@dataclasses.dataclass(slots=True)
+@dataclasses.dataclass()
 class Remote:
-    ssh: Optional[list[SshRemote]]
+    ssh: Optional[List[SshRemote]]
 
 
-@dataclasses.dataclass(slots=True)
+@dataclasses.dataclass()
 class VivadoProperty:
     name: str
     value: str
@@ -135,16 +155,16 @@ class VivadoProperty:
         return f'set_property -name {self.name} -value {self.value} -object {self.object}'
 
 
-@dataclasses.dataclass(slots=True)
+@dataclasses.dataclass()
 class Vivado:
     version: str
     part: str
     board: str
     board_long: str
-    properties: Optional[list[VivadoProperty]]
+    properties: Optional[List[VivadoProperty]]
 
 
-@dataclasses.dataclass(slots=True)
+@dataclasses.dataclass()
 class Vivamir:
     root: Path = dataclasses.field(init=False)
     version: SemanticVersion
@@ -152,8 +172,8 @@ class Vivamir:
     ignore: Optional[Ignore]
     design_top: str
     simulation_top: str
-    filesets: list[Fileset]
-    includes: list[Include]
+    filesets: List[Fileset]
+    includes: List[Include]
     block_designs: BlockDesigns
     ips: IPs
     remotes: Remote
@@ -168,14 +188,17 @@ class Vivamir:
             return ProjectPath((root / path).resolve().relative_to(root))
 
         self = dacite.from_dict(
-            cls, tomllib.loads((root / 'vivamir.toml').read_text(), parse_float=Decimal),
+            cls, toml.loads((root / 'vivamir.toml').read_text()),
             dacite.Config(
                 strict=True, cast=[
                     float, set, Enum, Path,
                     # Allow simple string to be parsed as project paths.
                     # Include
                 ],
-                type_hooks={ProjectPath: _resolve_relative}),
+                check_types=False,
+                type_hooks={
+                    ProjectPath: _resolve_relative
+                }),
         )
 
         if not SemanticVersion.project().compatible(self.version):

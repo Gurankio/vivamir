@@ -1,7 +1,7 @@
 import dataclasses
 
 
-@dataclasses.dataclass(slots=True)
+@dataclasses.dataclass()
 class SemanticVersion:
     major: int
     minor: int
