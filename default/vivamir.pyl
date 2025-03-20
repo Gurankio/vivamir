@@ -6,7 +6,7 @@ ignore         = {{ include = 'vivamir.ignore' }}
 
 # Sources
 includes = [
-    {{ path = 'include' }},
+    {{ path = 'include' }}
 ]
 filesets = [
     {{ kind = 'design', path = 'src' }},
