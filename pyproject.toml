@@ -7,12 +7,12 @@ name = "vivamir"
 version = "3.3.2"
 description = 'AMD Vivado mirroring utility'
 readme = "README.md"
-requires-python = ">=3.8"
+requires-python = ">=3.12"
 license = { file = "LICENSE" }
 keywords = []
 classifiers = [
     "Programming Language :: Python",
-    "Programming Language :: Python :: 3.8",
+    "Programming Language :: Python :: 3.12",
 ]
 dependencies = [
     "rich",

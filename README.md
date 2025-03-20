@@ -10,6 +10,13 @@ Use [PipX](https://pipx.pypa.io/stable/) for simpler updates and venv management
 pipx install git+https://git@github.com/Gurankio/vivamir
 ```
 
+Experimental: a python3.8 compatible version is available in the python3.8 branch
+and can be installed with the following:
+
+```sh
+pipx install git+https://git@github.com/Gurankio/vivamir@python3.8
+```
+
 ### What does this tool do?
 
 It allows you to:
@@ -146,9 +153,9 @@ Mainly Modules have considerable restrictions:
 
 Notably ~~these restriction are not readily available~~ only the last restriction requires custom Tcl scripts to work.
 (
-   _TODO: See some side project of mine that makes wrapping stuff easy._
-   I managed to get a configurable array of AXI monitor ports easily and might also work without duplicating files.
-   Still likely needs some script to help with re-packaging at every change...
+_TODO: See some side project of mine that makes wrapping stuff easy._
+I managed to get a configurable array of AXI monitor ports easily and might also work without duplicating files.
+Still likely needs some script to help with re-packaging at every change...
 )
 
 Should you package something you will have to duplicate all required files!
