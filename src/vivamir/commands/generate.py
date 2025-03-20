@@ -270,8 +270,8 @@ def _generate_project(vivamir: Vivamir) -> str:
         
         ### Force create project
         create_project $project_name $::root/vivamir/project -part {vivamir.vivado.part} -force
-        set -name "board_part" -value {vivamir.vivado.board_long} -objects [current_project]
-        set -name "platform.board_id" -value {vivamir.vivado.board} -objects [current_project]
+        set_property -name "board_part" -value {vivamir.vivado.board_long} -objects [current_project]
+        set_property -name "platform.board_id" -value {vivamir.vivado.board} -objects [current_project]
 
         ### Design files
         add_files -fileset sources_1 -norecurse $des_files
