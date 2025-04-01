@@ -23,8 +23,7 @@ It allows you to:
 
 - keep a _sane_ filesystem structure so that you can keep track of changes with your preferred VCS;
 - open the Vivado GUI in a consistent state;
-- TODO: run headless operations on remote hosts;
-- TODO: actually read logs.
+- actually read logs.
 
 #### Example project structure
 
@@ -46,20 +45,18 @@ project-name/
 │   └── wrapper_A/
 │       ├── ... (your IPs, see TODO)
 │       └── component.xml
-├── block_designs/
-│   ├── design_1.tcl
-│   └── design_1/
-│       ├── design_1.v
-│       └── ... (external IP files, TODO)
 ├── src/
+│   ├── bds/
+│   │   └── design_1.tcl
 │   └── module_A/
 │       ├── a.sv
 │       └── a-impl.v
 ├── test/
+│   ├── bds/                                    
+│   │   └── design_2.tcl                           
 │   └── module_A/
 │       ├── tb-a-top.sv
-│       ├── wave-config.wcgd
-│       └── vivamir.target.yaml
+│       └── wave-config.wcgd
 ├── vivamir.toml
 └── vivamir.ignore
 ```
@@ -153,7 +150,6 @@ Mainly Modules have considerable restrictions:
 
 Notably ~~these restriction are not readily available~~ only the last restriction requires custom Tcl scripts to work.
 (
-_TODO: See some side project of mine that makes wrapping stuff easy._
 I managed to get a configurable array of AXI monitor ports easily and might also work without duplicating files.
 Still likely needs some script to help with re-packaging at every change...
 )

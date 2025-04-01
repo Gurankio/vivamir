@@ -19,7 +19,7 @@ filesets = [
 trusted = []
 
 # Where the sync utility should put new designs.
-new_design_path = 'block_designs'
+new_design_path = 'src/bds'
 
 [ips]
 # Where Vivado should look for your IPs.
